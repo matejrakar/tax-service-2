@@ -6,12 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.springboot.taxservice.model.Trader;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is used as data access object. It contains methods for fetching data from DB.
  * @author Matej
  * 
  */
+@Component
 public class SQLAccess {
     private Connection connect = null;
     private PreparedStatement preparedStatement = null;
