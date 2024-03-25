@@ -11,7 +11,8 @@ public class Trader {
 	private BigDecimal tax_rate;
 	private BigDecimal tax_amount;
 	int tax_type_id;
-	
+
+	public Trader () {}
 	public Trader(BigDecimal tax_rate, BigDecimal tax_amount, int tax_type_id) {
 		this.tax_rate = tax_rate;
 		this.tax_amount = tax_amount;
