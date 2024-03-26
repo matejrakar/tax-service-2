@@ -1,7 +1,7 @@
 # tax-service
 Tax service by Matej Rakar
 
-This REST Service expects a stringified JSON with information about traderId, playedAmount and odd in GET request URI and, based on recieved data, 
+This REST Service expects a JSON request body with information about traderId, playedAmount and odd in GET request URI and, based on recieved data, 
 fetches information about a trader from database and calculates possibleReturnAmount, possibleReturnAmountBefTax, possibleReturnAmountAfterTax, taxRate and taxAmount.
 It then returns a JSON containing above mentioned calculated variables.
 
