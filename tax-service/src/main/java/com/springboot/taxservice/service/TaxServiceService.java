@@ -3,18 +3,28 @@ package com.springboot.taxservice.service;
 import com.springboot.taxservice.DAO.SQLAccess;
 import com.springboot.taxservice.model.TaxServiceResponse;
 import com.springboot.taxservice.model.Trader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.springboot.taxservice.model.TaxServiceResource;
+
+import javax.naming.InsufficientResourcesException;
 import java.math.BigDecimal;
 
 @Component
 public class TaxServiceService {
+    private static final Logger logger = LoggerFactory.getLogger(TaxServiceService.class);
+    private static final String INSUFFICIENT_RESOURCE = "Insufficient resource";
     private SQLAccess db;
     public TaxServiceService(@Autowired SQLAccess db) {
         this.db = db;
     }
-
+    /**
+     * calculateTaxData function calculates before and after tax and retrieves taxRate or taxAmount value from DB, based on recieved TaxServiceResource from request body and returns data in object TaxServiceResponse.
+     * @param taxServiceResource contains traderId, playedAmount and odd
+     * @return TaxServiceResponse object containing response data
+     */
     public TaxServiceResponse calculateTaxData (TaxServiceResource taxServiceResource) throws Exception {
         Trader trader = db.getTraderInfoFromDB(taxServiceResource.getTraderId());
 
@@ -40,6 +50,10 @@ public class TaxServiceService {
                 taxServiceResponse.setPossibleReturnAmount(taxServiceResponse.getPossibleReturnAmountAfterTax());
                 taxServiceResponse.setTaxAmount(trader.getTaxAmount());
             }
+            else {
+                logger.error(INSUFFICIENT_RESOURCE);
+                throw new InsufficientResourcesException();
+            }
         }
         else if(trader.getTaxTypeId() == 1) {
             /*Winnings taxation*/
@@ -61,6 +75,14 @@ public class TaxServiceService {
                 taxServiceResponse.setPossibleReturnAmount(taxServiceResponse.getPossibleReturnAmountAfterTax());
                 taxServiceResponse.setTaxAmount(trader.getTaxAmount());
             }
+            else {
+                logger.error(INSUFFICIENT_RESOURCE);
+                throw new InsufficientResourcesException();
+            }
+        }
+        else {
+            logger.error(INSUFFICIENT_RESOURCE);
+            throw new InsufficientResourcesException();
         }
         taxServiceResponse.roundDataToTwoDecimalPlaces();
         return taxServiceResponse;

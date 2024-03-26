@@ -1,5 +1,6 @@
 package com.springboot.taxservice;
 
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.springboot.taxservice.DAO.SQLAccess;
 import com.springboot.taxservice.model.TaxServiceResource;
 import com.springboot.taxservice.model.TaxServiceResponse;
@@ -11,15 +12,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.naming.InsufficientResourcesException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,8 +70,8 @@ public class TaxServiceServiceTest {
 
 	@Test
 	public void calculateTaxData_winningsTax_taxAmount() throws Exception {
-		TaxServiceResource taxServiceResource = new TaxServiceResource(3, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
-		when(db.getTraderInfoFromDB(3)).thenReturn(new Trader (null, BigDecimal.valueOf(2), 1));
+		TaxServiceResource taxServiceResource = new TaxServiceResource(4, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
+		when(db.getTraderInfoFromDB(4)).thenReturn(new Trader (null, BigDecimal.valueOf(2), 1));
 
 		TaxServiceResponse taxServiceResponse = taxServiceService.calculateTaxData(taxServiceResource);
 
@@ -80,6 +80,37 @@ public class TaxServiceServiceTest {
 		assertEquals(new BigDecimal("14.00"), taxServiceResponse.getPossibleReturnAmountAfterTax());
 	}
 
+	@Test(expected = SQLException.class)
+	public void calculateTaxData_SQLException() throws Exception {
+		TaxServiceResource taxServiceResource = new TaxServiceResource(4, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
+		when(db.getTraderInfoFromDB(4)).thenThrow(new SQLException());
 
+		taxServiceService.calculateTaxData(taxServiceResource);
+	}
+
+	@Test(expected = CommunicationsException.class)
+	public void calculateTaxData_dataBase_connectionError() throws Exception {
+		TaxServiceResource taxServiceResource = new TaxServiceResource(4, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
+		Throwable t = mock(Throwable.class);
+		when(db.getTraderInfoFromDB(4)).thenThrow(new CommunicationsException("Error", t));
+
+		taxServiceService.calculateTaxData(taxServiceResource);
+	}
+
+	@Test(expected = InsufficientResourcesException.class)
+	public void calculateTaxData_insufficientResource_no_tax_specified() throws Exception {
+		TaxServiceResource taxServiceResource = new TaxServiceResource(4, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
+		when(db.getTraderInfoFromDB(4)).thenReturn(new Trader (null, null, 1));
+
+		taxServiceService.calculateTaxData(taxServiceResource);
+	}
+
+	@Test(expected = InsufficientResourcesException.class)
+	public void calculateTaxData_insufficientResource_wrong_tax_type_specified() throws Exception {
+		TaxServiceResource taxServiceResource = new TaxServiceResource(4, BigDecimal.valueOf(5), BigDecimal.valueOf(3.2));
+		when(db.getTraderInfoFromDB(4)).thenReturn(new Trader (null, BigDecimal.valueOf(10), 2));
+
+		taxServiceService.calculateTaxData(taxServiceResource);
+	}
 
 }
