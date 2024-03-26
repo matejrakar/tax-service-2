@@ -15,4 +15,4 @@ To test this REST service, please follow the steps bellow:
 6. Connect it with GitHub and clone my repository to your machine.
 7. Run application
 8. You should now be able to test by sending a GET request from Postman, e.g. </br>
-http&#58;//localhost:8080/taxservice/{"traderId": 1,"playedAmount": 5,"odd": 3.2}
+http&#58;//localhost:9073/taxservice/{"traderId": 1,"playedAmount": 5,"odd": 3.2}
