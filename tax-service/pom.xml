@@ -12,7 +12,7 @@
 	<artifactId>tax-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tax-service</name>
-	<description>Tax service</description>
+	<description>Tax service 2.0</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -43,13 +43,12 @@
 		    <groupId>mysql</groupId>
 		    <artifactId>mysql-connector-java</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-
 	</dependencies>
 
 	<build>
