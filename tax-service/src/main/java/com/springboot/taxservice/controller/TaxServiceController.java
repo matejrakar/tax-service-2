@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class TaxServiceController {
 	@Autowired
 	private TaxServiceService taxService;
-	@GetMapping("/taxservice")
+	@PostMapping("/taxservice")
 	public ResponseEntity<TaxServiceResponse> getTaxService(@RequestBody TaxServiceResource taxServiceResource) throws Exception{
 			TaxServiceResponse taxServiceResponse = taxService.calculateTaxData(taxServiceResource);
 			return new ResponseEntity<>(taxServiceResponse, HttpStatus.OK);
